@@ -546,6 +546,7 @@ class MavlinkBackend(Backend):
         self._sensor_data = SensorMsg()
 
         # Restart the connection
+        carb.log_info(f"opening mavlink port on {self._connection_port}")
         self._connection = mavutil.mavlink_connection(self._connection_port)
 
         # Auxiliar variables to handle the lockstep between receiving sensor data and actuator control
@@ -653,7 +654,7 @@ class MavlinkBackend(Backend):
             mav_type (int): The ID that indicates the type of vehicle. Defaults to MAV_TYPE_GENERIC=0 
         """
 
-        carb.log_info("Sending heartbeat")
+        carb.log_verbose("Sending heartbeat")
 
         # Note: to know more about these functions, go to pymavlink->dialects->v20->standard.py
         # This contains the definitions for sending the hearbeat and simulated sensor messages
@@ -666,7 +667,7 @@ class MavlinkBackend(Backend):
         Args:
             time_usec (int): The total time elapsed since the simulation started
         """
-        carb.log_info("Sending sensor msgs")
+        carb.log_verbose("Sending sensor msgs")
 
         # Check which sensors have new data to send
         fields_updated: int = 0
@@ -719,7 +720,7 @@ class MavlinkBackend(Backend):
         Args:
             time_usec (int): The total time elapsed since the simulation started
         """
-        carb.log_info("Sending GPS msgs")
+        carb.log_verbose("Sending GPS msgs")
 
         # Do not send GPS data, if no new data was received
         if not self._sensor_data.new_gps_data:
@@ -754,7 +755,7 @@ class MavlinkBackend(Backend):
         Args:
             time_usec (int): The total time elapsed since the simulation started
         """
-        carb.log_info("Sending vision/mocap msgs")
+        carb.log_verbose("Sending vision/mocap msgs")
 
         # Do not send vision/mocap data, if not new data was received
         if not self._sensor_data.new_vision_data:
@@ -784,7 +785,7 @@ class MavlinkBackend(Backend):
             time_usec (int): The total time elapsed since the simulation started
         """
 
-        carb.log_info("Sending groundtruth msgs")
+        carb.log_verbose("Sending groundtruth msgs")
 
         # Do not send vision/mocap data, if not new data was received
         if not self._sensor_data.new_sim_state or self._sensor_data.sim_alt == 0:
@@ -829,7 +830,7 @@ class MavlinkBackend(Backend):
         # pymavlink is return 129 (the end of the buffer)
         if mode == mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED + 1:
 
-            carb.log_info("Parsing control input")
+            carb.log_verbose("Parsing control input")
 
             # Set the rotor target speeds
             self._rotor_data.update_input_reference(controls)
